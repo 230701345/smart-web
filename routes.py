@@ -14,15 +14,17 @@ ACTIVE_USER_ID = None
 @web_bp.before_app_request
 def load_initial():
     preload_products()
-    # Ensure a default demo user exists for ESP32 posts
+
+def get_target_user_id():
+    if current_user.is_authenticated:
+        return current_user.id
     demo = User.query.filter_by(username="demo").first()
     if not demo:
         pw = bcrypt.hashpw("SmartCart!123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         demo = User(username="demo", password_hash=pw)
         db.session.add(demo)
         db.session.commit()
-    global ACTIVE_USER_ID
-    ACTIVE_USER_ID = demo.id
+    return demo.id
 
 
 @web_bp.route("/")
@@ -64,8 +66,6 @@ def login():
     if not ok:
         return jsonify({"status": "error"}), 401
     login_user(user)
-    global ACTIVE_USER_ID
-    ACTIVE_USER_ID = user.id
     return jsonify({"status": "success"})
 
 
@@ -125,9 +125,7 @@ def scan():
     product = Product.query.filter_by(uid=uid).first()
     if not product:
         return jsonify({"status": "error"}), 404
-    uid_for_user = current_user.id if current_user.is_authenticated else ACTIVE_USER_ID
-    if not uid_for_user:
-        return jsonify({"status": "error"}), 401
+    uid_for_user = get_target_user_id()
     ci = CartItem.query.filter_by(user_id=uid_for_user, product_id=product.id).first()
     if ci:
         ci.quantity += 1
@@ -141,9 +139,7 @@ def scan():
 
 @api_bp.route("/cart", methods=["GET"])
 def cart_get():
-    uid_for_user = current_user.id if current_user.is_authenticated else ACTIVE_USER_ID
-    if not uid_for_user:
-        return jsonify({"status": "error"}), 401
+    uid_for_user = get_target_user_id()
     items = db.session.query(CartItem, Product).join(Product, Product.id == CartItem.product_id).filter(CartItem.user_id == uid_for_user).all()
     out = []
     for ci, p in items:
@@ -155,9 +151,7 @@ def cart_get():
 
 @api_bp.route("/checkout", methods=["POST"])
 def checkout():
-    uid_for_user = current_user.id if current_user.is_authenticated else ACTIVE_USER_ID
-    if not uid_for_user:
-        return jsonify({"status": "error"}), 401
+    uid_for_user = get_target_user_id()
     items = db.session.query(CartItem, Product).join(Product, Product.id == CartItem.product_id).filter(CartItem.user_id == uid_for_user).all()
     if not items:
         return jsonify({"status": "error"}), 400
@@ -175,9 +169,7 @@ def checkout():
 
 @api_bp.route("/history", methods=["GET"])
 def history():
-    uid_for_user = current_user.id if current_user.is_authenticated else ACTIVE_USER_ID
-    if not uid_for_user:
-        return jsonify({"status": "error"}), 401
+    uid_for_user = get_target_user_id()
     orders = Order.query.filter_by(user_id=uid_for_user).order_by(Order.created_at.desc()).all()
     out = []
     for o in orders:
