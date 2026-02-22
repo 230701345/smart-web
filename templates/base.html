@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "Smart Cart" }}</title>
+  <style>
+    :root { --bg:#0f172a; --panel:#0c1220; --text:#e5e7eb; --muted:#94a3b8; --accent:#22d3ee; --danger:#ef4444; --radius:14px; }
+    html,body { height:100%; background:#0b1220; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text); }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 20px; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:linear-gradient(180deg,#0d1324,#0c1222); border-radius:var(--radius); }
+    .brand { font-weight:700; letter-spacing:.3px; }
+    .links { display:flex; gap:12px; }
+    .link { color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px; }
+    .link:hover { background:rgba(255,255,255,.06); }
+    .card { background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px; margin-top:16px; }
+    .btn { display:inline-block; padding:10px 14px; border-radius:12px; background:rgba(34,211,238,.2); color:var(--text); text-decoration:none; border:1px solid rgba(255,255,255,.08); }
+    .btn.primary { background:linear-gradient(180deg,rgba(34,211,238,.35),rgba(34,211,238,.22)); }
+    .btn.danger { background:linear-gradient(180deg,rgba(239,68,68,.25),rgba(239,68,68,.16)); }
+    .field { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+    .input { border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:var(--text); padding:10px 12px; width:100%; }
+    .muted { color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; }
+    @media (max-width:900px){ .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <div class="brand">Smart Cart</div>
+      <div class="links">
+        {% if current_user.is_authenticated %}
+        <a class="link" href="{{ url_for('web.dashboard') }}">Dashboard</a>
+        <a class="link" href="{{ url_for('web.cart_page') }}">Cart</a>
+        <a class="link" href="{{ url_for('web.history_page') }}">History</a>
+        <a class="link" href="{{ url_for('web.logout') }}">Logout</a>
+        {% else %}
+        <a class="link" href="{{ url_for('web.login') }}">Login</a>
+        <a class="link" href="{{ url_for('web.register') }}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

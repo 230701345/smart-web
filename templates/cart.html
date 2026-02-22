@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Cart</h3>
+  <div id="cart-list">
+    {% if items %}
+      {% for ci, p in items %}
+      <div class="card">
+        <div>{{ p.name }}</div>
+        <div class="muted">Qty: {{ ci.quantity }}</div>
+        <div class="muted">Price: ₹{{ p.price }}</div>
+        <div class="muted">Subtotal: ₹{{ ci.quantity * p.price }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="muted">Cart is empty</div>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div>Total: ₹<span id="cart-total">{{ total_amount }}</span></div>
+    <a class="btn primary" href="{{ url_for('web.payment_page') }}">Proceed to Payment</a>
+  </div>
+  <div style="margin-top:10px">
+    <a class="btn" href="{{ url_for('web.dashboard') }}">Back to Dashboard</a>
+  </div>
+</div>
+<script>
+async function refreshCart(){
+  try{
+    const r = await fetch('{{ url_for("api.cart_get") }}', { cache:'no-store' });
+    if(!r.ok) return;
+    const j = await r.json();
+    const list = document.getElementById('cart-list');
+    const items = j.items || [];
+    if(items.length === 0){
+      list.innerHTML = '<div class="muted">Cart is empty</div>';
+    }else{
+      let html = '';
+      for(const it of items){
+        const sub = (Number(it.price||0) * Number(it.qty||1));
+        html += '<div class=\"card\"><div>' + (it.name||'') + '</div><div class=\"muted\">Qty: ' + (it.qty||1) + '</div><div class=\"muted\">Price: ₹' + (it.price||0) + '</div><div class=\"muted\">Subtotal: ₹' + sub + '</div></div>';
+      }
+      list.innerHTML = html;
+    }
+    document.getElementById('cart-total').textContent = j.total_price || 0;
+  }catch(e){}
+}
+refreshCart();
+setInterval(refreshCart, 3000);
+</script>
+{% endblock %}

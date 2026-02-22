@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Products</h3>
+  <div class="grid">
+    {% for p in products %}
+    <div class="card">
+      <div>{{ p.name }}</div>
+      <div class="muted">UID: {{ p.uid }}</div>
+      <div class="muted">Price: ₹{{ p.price }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="card">
+  <h3>Cart Summary</h3>
+  <div class="grid">
+    <div class="card">
+      <div class="muted">Items</div>
+      <div id="summary-items">{{ total_qty }}</div>
+    </div>
+    <div class="card">
+      <div class="muted">Total</div>
+      <div>₹<span id="summary-total">{{ total_amount }}</span></div>
+    </div>
+  </div>
+  <div style="margin-top:10px">
+    <a class="btn primary" href="{{ url_for('web.cart_page') }}">View Cart</a>
+  </div>
+</div>
+<script>
+async function refreshSummary(){
+  try{
+    const r = await fetch('{{ url_for("api.cart_get") }}', { cache:'no-store' });
+    if(!r.ok) return;
+    const j = await r.json();
+    document.getElementById('summary-items').textContent = j.total_items || 0;
+    document.getElementById('summary-total').textContent = j.total_price || 0;
+  }catch(e){}
+}
+refreshSummary();
+setInterval(refreshSummary, 3000);
+</script>
+{% endblock %}

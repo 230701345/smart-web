@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Payment Success</h3>
+  <div class="muted">Order completed. Cart cleared.</div>
+  <div style="margin-top:10px">
+    <a class="btn" href="{{ url_for('web.dashboard') }}">Back to Dashboard</a>
+    <a class="btn primary" href="{{ url_for('web.history_page') }}">View History</a>
+  </div>
+</div>
+{% endblock %}

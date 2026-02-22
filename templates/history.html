@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Order History</h3>
+  {% if orders %}
+    {% for o in orders %}
+    <div class="card">
+      <div>Order #{{ o.id }} • ₹{{ o.total_amount }} • {{ o.payment_status }}</div>
+      <div class="muted">{{ o.created_at }}</div>
+      {% for it in items_map[o.id] %}
+      <div class="muted">Product {{ it.product_id }} • Qty {{ it.quantity }} • Price ₹{{ it.price_at_purchase }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="muted">No orders</div>
+  {% endif %}
+  <div style="margin-top:10px">
+    <a class="btn" href="{{ url_for('web.dashboard') }}">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

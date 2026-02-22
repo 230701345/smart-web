@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Payment</h3>
+  <div class="muted">Processing Payment...</div>
+  <div style="margin-top:10px">
+    <button id="confirm" class="btn primary">Confirm</button>
+  </div>
+</div>
+<script>
+document.getElementById('confirm').addEventListener('click', async function(){
+  const res = await fetch('{{ url_for("api.checkout") }}', { method:'POST' });
+  if(res.ok){ location.href='{{ url_for("web.success_page") }}'; } else { alert('Checkout failed'); }
+});
+</script>
+{% endblock %}

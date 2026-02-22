@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>Login</h3>
+  <form id="loginForm">
+    <div class="field">
+      <label class="muted">Username</label>
+      <input class="input" name="username" required>
+    </div>
+    <div class="field">
+      <label class="muted">Password</label>
+      <input class="input" type="password" name="password" required>
+    </div>
+    <button class="btn primary" type="submit">Login</button>
+    <span class="muted">No account? <a href="{{ url_for('web.register') }}">Register</a></span>
+  </form>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const body = { username: fd.get('username'), password: fd.get('password') };
+  const res = await fetch('{{ url_for("web.login") }}', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  if(res.ok){ location.href='{{ url_for("web.dashboard") }}'; } else { alert('Login failed'); }
+});
+</script>
+{% endblock %}
