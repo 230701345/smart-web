@@ -19,10 +19,12 @@ Option 2: Manual
 - Add env vars:
   - `SECRET_KEY` → any random string
   - `DATABASE_URL` → Render Postgres connection string
+  - `DEVICE_API_KEY` → set a shared device key (optional; required if set)
 
 ## ESP32 Cloud
 - Use HTTPS with `WiFiClientSecure` and `setInsecure()` for development.
 - Set `SERVER_URL` to your Render URL: `https://<your>.onrender.com/api/scan`
+- Add header `X-API-KEY: <DEVICE_API_KEY>` if you set it on Render.
 
 ## UIDs
 - Milk: `66339797` (₹50)

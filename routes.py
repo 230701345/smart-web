@@ -9,6 +9,7 @@ web_bp = Blueprint("web", __name__)
 api_bp = Blueprint("api", __name__)
 
 ACTIVE_USER_ID = None
+DEVICE_API_KEY = os.environ.get("DEVICE_API_KEY") or None
 
 
 @web_bp.before_app_request
@@ -122,6 +123,10 @@ def scan():
     uid = (data.get("uid") or "").strip().upper()
     if not uid:
         return jsonify({"status": "error"}), 400
+    if DEVICE_API_KEY:
+        key = request.headers.get("X-API-KEY") or ""
+        if key != DEVICE_API_KEY:
+            return jsonify({"status": "error"}), 401
     product = Product.query.filter_by(uid=uid).first()
     if not product:
         return jsonify({"status": "error"}), 404
@@ -176,3 +181,7 @@ def history():
         its = OrderItem.query.filter_by(order_id=o.id).all()
         out.append({"id": o.id, "total_amount": int(o.total_amount), "payment_status": o.payment_status, "created_at": o.created_at.isoformat(), "items": [{"product_id": it.product_id, "quantity": int(it.quantity), "price_at_purchase": int(it.price_at_purchase)} for it in its]})
     return jsonify({"orders": out})
+
+@api_bp.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "ok"})
