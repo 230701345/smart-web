@@ -1,4 +1,3 @@
-import os
 import json
 import bcrypt
 from flask import Blueprint, request, redirect, url_for, render_template, jsonify
@@ -9,7 +8,6 @@ web_bp = Blueprint("web", __name__)
 api_bp = Blueprint("api", __name__)
 
 ACTIVE_USER_ID = None
-DEVICE_API_KEY = os.environ.get("DEVICE_API_KEY") or None
 
 
 @web_bp.before_app_request
@@ -123,10 +121,6 @@ def scan():
     uid = (data.get("uid") or "").strip().upper()
     if not uid:
         return jsonify({"status": "error"}), 400
-    if DEVICE_API_KEY:
-        key = request.headers.get("X-API-KEY") or ""
-        if key != DEVICE_API_KEY:
-            return jsonify({"status": "error"}), 401
     product = Product.query.filter_by(uid=uid).first()
     if not product:
         return jsonify({"status": "error"}), 404

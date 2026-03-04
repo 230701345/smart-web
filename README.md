@@ -6,25 +6,10 @@
 3. Open `http://127.0.0.1:5000/`
    - Login: `demo` / `SmartCart!123`
 
-## Render Deploy
-Option 1: Blueprint
-- This repo includes `render.yaml`. On Render:
-  - New → Blueprint → Use this repo `230701345/smart-web`
-  - Render creates a Web Service and a PostgreSQL DB automatically
-
-Option 2: Manual
-- New → Web Service → Connect repo
-- Build: `pip install -r requirements.txt`
-- Start: `gunicorn app:app`
-- Add env vars:
-  - `SECRET_KEY` → any random string
-  - `DATABASE_URL` → Render Postgres connection string
-  - `DEVICE_API_KEY` → set a shared device key (optional; required if set)
-
-## ESP32 Cloud
-- Use HTTPS with `WiFiClientSecure` and `setInsecure()` for development.
-- Set `SERVER_URL` to your Render URL: `https://<your>.onrender.com/api/scan`
-- Add header `X-API-KEY: <DEVICE_API_KEY>` if you set it on Render.
+## ESP32 Local
+- Put your PC and ESP32 on the same WiFi RalphSSID NB.
+- Start Flask (`python app.py`) and note the LAN URL in the terminal, e.g., `http://10.0.0.5:5000`
+- Set the ESP32 URL to `http://<your-pc-ip>:5000/api/scan`
 
 ## UIDs
 - Milk: `66339797` (₹50)
